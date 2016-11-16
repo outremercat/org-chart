@@ -1,0 +1,22 @@
+<table><tr><td width="40"></td><td>
+<h2>Eng Org</h2>
+
+<div class="form-group">
+<label for="name">Name:</label>
+  <input type="text" (keyup.enter)="onKey($event)" id="name" required
+      [(ngModel)]="boxInput" name="name" #name="ngModel">
+  </div>
+   <div [hidden]="name.valid || name.pristine" 
+             class="alert alert-danger" style="max-width: 200px;">
+          Name is required
+   </div>
+
+<ul>
+  <li class="emplist" *ngFor="let employee of employees" [style.margin-left.px]="getIndent(employee)">
+    {{ employee.name}} - {{ employee.title }} 
+    <span *ngIf="employee.team != ''">&nbsp;&nbsp;<b>({{employee.team}})</b></span>
+    </li>
+</ul>
+
+<p class="error" *ngIf="errorMessage">{{errorMessage}}</p>
+</td></tr></table>
