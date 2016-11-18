@@ -6,10 +6,6 @@
   <input type="text" (keyup.enter)="onKey($event)" id="name" required
       [(ngModel)]="boxInput" name="name" #name="ngModel">
   </div>
-   <div [hidden]="name.valid || name.pristine" 
-             class="alert alert-danger" style="max-width: 200px;">
-          Name is required
-   </div>
 
 <ul>
   <li class="emplist" *ngFor="let employee of employees" [style.margin-left.px]="getIndent(employee)">
