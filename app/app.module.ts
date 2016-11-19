@@ -6,7 +6,8 @@ import { HttpModule, JsonpModule } from '@angular/http';
 import { AppComponent }  from './app.component';
 
 import { EmployeeService } from './employee.service'
-import { EmpListComponent } from './emp-list.component'
+import { EmployeeListComponent } from './employee-list.component'
+import { EmployeeSearchComponent } from './employee-search.component'
 
 import './rxjs-extensions';
 
@@ -18,7 +19,8 @@ import './rxjs-extensions';
                   JsonpModule ],
 
   declarations: [ AppComponent,
-                  EmpListComponent,
+                  EmployeeListComponent,
+                  EmployeeSearchComponent
   ],
 
   providers:    [ EmployeeService ],

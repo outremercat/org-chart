@@ -1,0 +1,10 @@
+<div id="search-component">
+  <input #searchBox id="search-box" (keyup)="search(searchBox.value)" />
+  <div>
+    <div *ngFor="let employee of employees | async"
+         (click)="refreshSearch(employee)" class="search-result" >
+      {{employee.name}}
+    </div>
+  </div>
+</div>
+<employee-list></employee-list>

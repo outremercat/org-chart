@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 import { Employee } from './employee';
 import { EmployeeRow } from './employee-row'
+import { EmployeeSearchComponent } from './employee-search.component'
 
 import { OnInit } from '@angular/core';
 
@@ -9,12 +10,12 @@ import { EmployeeService } from "./employee.service";
 
 @Component({
    moduleId: module.id,
-   selector: 'emp-list',
-   templateUrl: 'emp-list.component.html',
-   styleUrls: [ 'emp-list.component.css' ]   
+   selector: 'employee-list',
+   templateUrl: 'employee-list.component.html',
+   styleUrls: [ 'employee-list.component.css' ]   
 })
 
-export class EmpListComponent implements OnInit {
+export class EmployeeListComponent implements OnInit {
 
     errorMessage: string;
     employees: EmployeeRow[];
