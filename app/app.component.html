@@ -1,0 +1,21 @@
+<table><tr><td style="min-width:40px">&nbsp;</td><td>
+<h2>Pure Org</h2>
+    <button (click)="doAll()">Puritan Nation</button>&nbsp; 
+    <button (click)="doEng()">Engineering</button>&nbsp; 
+    <button (click)="doSupport()">Support</button>&nbsp;
+    <button (click)="doFinance()">Finance</button>&nbsp;
+    <button (click)="doGlobalSales()">Global Sales</button>&nbsp;
+    <button (click)="doCTO()">CTO</button>&nbsp;
+    <button (click)="doOps()">Ops</button>&nbsp;
+    <button (click)="doProducts()">Products</button>&nbsp;
+    <button (click)="doMarketing()">Marketing</button>&nbsp;
+    <br><br>
+    <employee-search (onNewSearchTerm)="updateSearchTerm($event)"
+                     (onNewDirectsOnly)="updateDirectsOnly($event)"
+                     [searchTerm]="searchTerm">
+    </employee-search>
+    <employee-list  [searchTerm]="searchTerm"
+                    [directsOnly]="directsOnly">
+    </employee-list>
+
+</td></tr></table>

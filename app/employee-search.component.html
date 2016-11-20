@@ -1,9 +1,20 @@
-<div id="search-component">
-  <input #searchBox id="search-box" (keyup)="search(searchBox.value)" />
-  <div>
-    <div *ngFor="let employee of employees | async"
-         (click)="refreshSearch(employee)" class="search-result" >
-      {{employee}}
-    </div>
+<div style="position: relative;">
+  <input #searchBox [(ngModel)]="aSearchBox" id="search-box" 
+      (keyup)="search(searchBox.value)" 
+      (click)="resetSearchBox(searchBox)"
+      (keydown)="keyDown($event)" />
+  <label>
+      <input type="checkbox" name="directsOnly" 
+             [(ngModel)]="directsOnly" 
+             (click)="refreshSearchFromDirectsOnly()">
+      Directs only
+  </label>
+</div>
+<div style="position: absolute;">
+  <div  *ngFor="let employee of employees" 
+          (click)="refreshSearch(employee)" class="search-result" 
+          [ngClass]="{'suggestion-active' : activeEmployee === employee}" >
+        {{employee}}
   </div>
 </div>
+<br>

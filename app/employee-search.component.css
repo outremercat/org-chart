@@ -12,3 +12,7 @@
   width: 200px;
   height: 20px;
 }
+.suggestion-active {
+      background-color: #008fca;
+      color: #ffffff;
+}

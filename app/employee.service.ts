@@ -15,6 +15,7 @@ export class EmployeeService {
     private emailToId: {[key: string] : string} = {}     // map e-mail address to employee ID
     private idToTeam: {[key: string] : string} = {}      // map employee ID to team names
     private engTeamtoId: {[key: string] : string} = {}   // map team to manager ID 
+    private employeeNames: Array<string> = [];     // array containing all names
     private rootEmployee: string;
 
 
@@ -34,20 +35,22 @@ export class EmployeeService {
         let body = res.json();
         let empsData = body['Report_Entry'];
         this.parseJson(empsData);
-        let emplRows = this.createEmployeeTable(this.rootEmployee);
+        let emplRows = this.createEmployeeTable(this.rootEmployee, false);
         return emplRows;
     }
 
     private parseJson(empsData : [any]){
        // map to objects
         let empls : Employee[] = [];
+        let count : number = 0;
         for (let entry of empsData) {
             let emp = new Employee(entry);
 
             // skip anyone not in Bob's group
+            /*
             if (!emp.inBobOrg() || emp.notEngineer()) {
                 continue;
-            }
+            }*/
 
             let employeeId = emp.getEmployeeId();
 
@@ -58,24 +61,25 @@ export class EmployeeService {
             this.employeeById[employeeId] = emp;
             this.nameToId[emp.getFullName()] = employeeId;
             this.emailToId[emp.getEmail()] = employeeId;
-
+            
             empls.push(emp);
+
         } 
 
         // second pass to setup employee list for mgrs and to populate team map
         for (let empId in this.employeeById) {
             let emp : Employee = this.employeeById[empId];
-            if (emp.reportsToCoz() || emp.isBob()) {
+            /*if (emp.reportsToCoz() || emp.isBob()) {
                 continue;
-            } 
+            } */
             let mgrId : string = emp.getMgrId();
 
             if (mgrId in this.employeeById) {
                 let mgr : Employee = this.employeeById[mgrId];
                 mgr.addEmployee(empId)
             }
-
         }
+        this.employeeNames = Object.keys(this.nameToId)
     }
 
     private addEmployeeToTeam(teamString: any, employeeId: any) {
@@ -97,7 +101,7 @@ export class EmployeeService {
         return Promise.reject(errMsg);
     }
 
-    public createEmployeeTable(rootManager : string) {
+    public createEmployeeTable(rootManager : string, directsOnly: boolean) {
         // create an array of EmployeeRow where each row looks as follows:
         //    name, title, team, level
         // 'team' is set only for the manager of the team
@@ -113,31 +117,38 @@ export class EmployeeService {
         if (!mgrObj) {
             return [];
         }
-        let recursive = true;
+        let recursive = !directsOnly;
         // if this is not a manager, get their manager
         if (!mgrObj.isManager()) {
             mgrId = mgrObj.getMgrId();
             mgrObj = this.employeeById[mgrId];
             recursive = false;
         }
+        let rowCount : number = 0;
+
         while(true) {
+            //console.log("Row count: " + rowCount)
             let nextRow = { level: atLevel, team: mgrObj.getTeam(), title: mgrObj.getTitle(), name: mgrObj.getFullName() };         
+            //console.log("Adding manager: " + mgrObj.getFullName());
+            rowCount++;
             empTable.push(nextRow);
             let empList = mgrObj.getEmployees();
             atLevel += 1;
             for (let empId of empList) { 
                 empObj = this.employeeById[empId];
-                if (empObj.isManager() && recursive) {
+                if (empObj.isManager() && recursive && empObj != mgrObj) {
                     empObj.level = atLevel;
                     subMgrs.push(empObj);
                 } else {
                     let anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
+                    //console.log("Adding employee: " + empObj.getFullName());
+                    rowCount++
                     empTable.push(anotherRow);
                 }
             }
             if (recursive) {
                 if (subMgrs.length > 0) {
-                    mgrObj = subMgrs.pop()
+                    mgrObj = subMgrs.pop();
                     atLevel = mgrObj.level;
                 } else {
                     break;
@@ -170,6 +181,28 @@ export class EmployeeService {
 
     private getNameFromId(empId: string) {
         return this.employeeById[empId].getFullName()
+    }
+
+    searchCandidates (pattern : string) {
+        console.log("searchCandidates: " + pattern)
+        if (pattern == null || pattern == undefined) {
+            return [];
+        }
+
+        let candidates : Array<string> = []
+        let candCount = 0;
+        pattern = pattern.toLowerCase()
+        for (let cand of this.employeeNames) {
+            if(cand.toLowerCase().indexOf(pattern) != -1) {
+                candidates.push(cand);
+                candCount++;
+                if (candCount == 20) {
+                    break;
+                }
+            }
+        } 
+        // sort
+        return candidates.sort();
     }
 
 }

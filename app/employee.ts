@@ -42,7 +42,7 @@ export class Employee {
     } 
 
     getEmail() {
-        return this.mydata['primaryWorkEmail'].toLowerCase();
+        return this.mydata['primaryWorkEmail'];
     }
 
     getMgrId() {

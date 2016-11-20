@@ -1,17 +1,51 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 
 @Component({
+    moduleId: module.id,
     selector: 'my-app',
-    template: `<h2>Pure Org</h2>
-               <employee-search (onNewSearchTerm)="onNewSearchTerm($event)"></employee-search>
-               <employee-list  [searchTerm]="searchTerm"> </employee-list>
-               `
+    templateUrl: 'app.component.html' 
 })
 export class AppComponent {
-    searchTerm : string = "Dan Decasper";
 
-    onNewSearchTerm(newTerm: string) {
+    searchTerm : string = "Scott \"Dietz\" Dietzen";
+    directsOnly: boolean = false;
+    
+    updateSearchTerm(newTerm: string) {
         this.searchTerm = newTerm;
     }
-    
+
+    updateDirectsOnly(newDirectsOnly: boolean) {
+        this.directsOnly = newDirectsOnly;
+    }
+
+    doAll() {
+        this.searchTerm = "Scott \"Dietz\" Dietzen"; 
+    }
+
+    doEng() {
+        this.searchTerm = "Bob Wood";
+    }
+
+    doSupport() {
+        this.searchTerm = "Colin Mead";
+    }
+
+    doFinance() {
+        this.searchTerm = "Timothy Riitters";
+    }
+    doGlobalSales() {
+        this.searchTerm = "David \"Hat\" Hatfield";
+    }
+    doCTO() {
+        this.searchTerm = "John \"Coz\" Colgrove";
+    }
+    doOps() {
+        this.searchTerm = "Todd Engle";
+    }
+    doProducts() {
+        this.searchTerm = "Matthew \"Kix\" Kixmoeller";
+    }
+    doMarketing() {
+        this.searchTerm = "Jonathan Martin";
+    }
  }
