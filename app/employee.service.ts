@@ -15,11 +15,13 @@ export class EmployeeService {
     private emailToId: {[key: string] : string} = {}     // map e-mail address to employee ID
     private idToTeam: {[key: string] : string} = {}      // map employee ID to team names
     private engTeamtoId: {[key: string] : string} = {}   // map team to manager ID 
+    private rootEmployee: string;
 
 
     constructor(private http: Http) { }
 
-    getEmployees(): Promise<EmployeeRow[]> {
+    getEmployees(rEmployee : string): Promise<EmployeeRow[]> {
+        this.rootEmployee = rEmployee; 
         return this.http.get(this.employeesUrl)
                     .toPromise()
                     .then(this.extractData)
@@ -32,11 +34,9 @@ export class EmployeeService {
         let body = res.json();
         let empsData = body['Report_Entry'];
         this.parseJson(empsData);
-        let emplRows = this.createEmployeeTable("Bob Wood");
+        let emplRows = this.createEmployeeTable(this.rootEmployee);
         return emplRows;
     }
-
-  
 
     private parseJson(empsData : [any]){
        // map to objects
@@ -82,7 +82,6 @@ export class EmployeeService {
         this.engTeamtoId[teamString] = employeeId;
         this.idToTeam[employeeId] = teamString;
     }
-
 
     private handleError (error: Response | any) {
         // In a real world app, we might use a remote logging infrastructure

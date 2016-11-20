@@ -3,8 +3,7 @@
   <div>
     <div *ngFor="let employee of employees | async"
          (click)="refreshSearch(employee)" class="search-result" >
-      {{employee.name}}
+      {{employee}}
     </div>
   </div>
 </div>
-<employee-list></employee-list>
