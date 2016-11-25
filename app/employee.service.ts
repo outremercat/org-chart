@@ -9,15 +9,16 @@ import { EmployeeRow } from './employee-row';
 @Injectable()
 export class EmployeeService {
 
-    private employeesUrl = 'http://vm-dan:7800/org'
+    private employeesUrl = 'http://vm-dan.dev.purestorage.com/org.json'
     private employeeById: {[key: string] : Employee} = {}       // map employee ID to Employee object
     private nameToId: {[key: string] : string} = {}      // map employee names to employee ID
     private emailToId: {[key: string] : string} = {}     // map e-mail address to employee ID
     private idToTeam: {[key: string] : string} = {}      // map employee ID to team names
     private engTeamtoId: {[key: string] : string} = {}   // map team to manager ID 
-    private employeeNames: Array<string> = [];     // array containing all names
+    private employeeNames: Array<string> = [];           // array containing all names
     private rootEmployee: string;
 
+    public lastManagerChain: Array<any> = [];            // holds chain of managers, updated by createEmployeeTable
 
     constructor(private http: Http) { }
 
@@ -101,6 +102,17 @@ export class EmployeeService {
         return Promise.reject(errMsg);
     }
 
+    private updateManagerChain(empId: Employee) : void {
+        // get manager chain
+        this.lastManagerChain = [];
+        let mgrObj = empId;
+        while (!(mgrObj.isScott())) {
+            mgrObj = this.employeeById[mgrObj.getMgrId()];
+            this.lastManagerChain.push(mgrObj);
+        } 
+        this.lastManagerChain.reverse();
+
+    }
     public createEmployeeTable(rootManager : string, directsOnly: boolean) {
         // create an array of EmployeeRow where each row looks as follows:
         //    name, title, team, level
@@ -117,12 +129,16 @@ export class EmployeeService {
         if (!mgrObj) {
             return [];
         }
+        // update manager chain
+        this.updateManagerChain(mgrObj); 
+   
         let recursive = !directsOnly;
         // if this is not a manager, get their manager
         if (!mgrObj.isManager()) {
             mgrId = mgrObj.getMgrId();
             mgrObj = this.employeeById[mgrId];
             recursive = false;
+            this.lastManagerChain.pop();
         }
         let rowCount : number = 0;
 

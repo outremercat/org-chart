@@ -22,6 +22,7 @@ export class EmployeeListComponent implements OnInit,OnChanges {
 
     errorMessage: string;
     employees: EmployeeRow[];
+    managerChain: Employee[];
 
     constructor (private employeeService: EmployeeService) {
     }
@@ -34,11 +35,14 @@ export class EmployeeListComponent implements OnInit,OnChanges {
         //this.employees = this.employeeService.createEmployeeTable(changes['searchTerm'].currentValue,
         //                                                          changes['directsOnly'].currentValue);
         this.employees = this.employeeService.createEmployeeTable(this.searchTerm, this.directsOnly);
+        this.managerChain = this.employeeService.lastManagerChain;
     }
 
     getEmployees() {
         this.employeeService.getEmployees(this.searchTerm)
-            .then(employees => { this.employees = employees; });
+            .then(employees => { this.employees = employees;
+                                 this.managerChain = this.employeeService.lastManagerChain; 
+                               });
     }
 
     getIndent(empObj: Employee): number {

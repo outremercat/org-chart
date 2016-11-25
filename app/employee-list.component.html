@@ -1,9 +1,15 @@
 
-
+<div style="width: 100vw;">
+    <div  *ngFor="let nextManager of managerChain" class="managerchain">
+      {{nextManager.getFullName()}}
+      <img src="small_arrow.png" />
+    </div>
+</div>
+<br>
 <ul>
-  <li class="emplist" *ngFor="let employee of employees" [style.margin-left.px]="getIndent(employee)">
-    {{ employee.name}} - {{ employee.title }} 
-    <span *ngIf="employee.team != ''">&nbsp;&nbsp;<b>({{employee.team}})</b></span>
+    <li class="emplist" *ngFor="let employee of employees" [style.margin-left.px]="getIndent(employee)">
+        {{ employee.name}} - {{ employee.title }} 
+        <span *ngIf="employee.team != ''">&nbsp;&nbsp;<b>({{employee.team}})</b></span>
     </li>
 </ul>
 

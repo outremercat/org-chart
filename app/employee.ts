@@ -84,19 +84,19 @@ export class Employee {
         return true
     }
 
-    notEngineer() {
+    notEngineer(): boolean {
         return (this.mydata['businessTitle'] == 'Office Manager');
     }
 
-    reportsToCoz() {
+    reportsToCoz(): boolean {
         return (this.mydata['Manager'] == 'John "Coz" Colgrove'); 
     }
 
-    isBob() {
-        (this.getFullName() == "Rober Wood" || this.getFullName() == "Bob Wood")
+    isScott(): boolean {
+        return (this.getFullName() == "Scott \"Dietz\" Dietzen")
     }
 
-    addEmployee(employeeId : string) {
+    addEmployee(employeeId : string) : void {
         this.employeeList.push(employeeId)
     }
 }
