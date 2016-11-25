@@ -48,11 +48,15 @@ export class EmployeeSearchComponent implements OnInit {
     // let EmployeeList know that it needs to update 
     refreshSearch(empl: string): void {
         this.searchTerm = empl;
+        // notify the other components
         this.onNewSearchTerm.emit(empl);
         this.onNewDirectsOnly.emit(this.directsOnly);
+        this.employees = [];
+        this.aSearchBox = "";
     }
 
     refreshSearchFromDirectsOnly(): void {
+        // notify the other components
         this.onNewSearchTerm.emit(this.searchTerm);
         this.onNewDirectsOnly.emit(!this.directsOnly);
     }
@@ -103,7 +107,12 @@ export class EmployeeSearchComponent implements OnInit {
                     event.keyCode === 10 || event.keyCode === 13) &&
                     this.activeEmployeeListVisible) { // ENTER
 
-            this.refreshSearch(this.getActiveEmployee())
+            let activeEmployee = this.getActiveEmployee(); 
+            if (activeEmployee != "") {   // this is set if the user selected from the popup and hit return
+                this.refreshSearch(activeEmployee); 
+            } else {
+                this.refreshSearch(this.aSearchBox);
+            }
             this.employees = [];
             this.aSearchBox = ""
             this.activeEmployeeIndex = -1;

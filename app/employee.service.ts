@@ -12,6 +12,7 @@ export class EmployeeService {
     private employeesUrl = 'http://vm-dan.dev.purestorage.com/org.json'
     private employeeById: {[key: string] : Employee} = {}       // map employee ID to Employee object
     private nameToId: {[key: string] : string} = {}      // map employee names to employee ID
+    private nameToIdLower: {[key: string] : string} = {}      // map employee names (lower case) to employee ID
     private emailToId: {[key: string] : string} = {}     // map e-mail address to employee ID
     private idToTeam: {[key: string] : string} = {}      // map employee ID to team names
     private engTeamtoId: {[key: string] : string} = {}   // map team to manager ID 
@@ -61,6 +62,7 @@ export class EmployeeService {
 
             this.employeeById[employeeId] = emp;
             this.nameToId[emp.getFullName()] = employeeId;
+            this.nameToIdLower[emp.getFullName().toLowerCase()] = employeeId;
             this.emailToId[emp.getEmail()] = employeeId;
             
             empls.push(emp);
@@ -106,7 +108,7 @@ export class EmployeeService {
         // get manager chain
         this.lastManagerChain = [];
         let mgrObj = empId;
-        while (!(mgrObj.isScott())) {
+        while (mgrObj && !(mgrObj.isScott())) {
             mgrObj = this.employeeById[mgrObj.getMgrId()];
             this.lastManagerChain.push(mgrObj);
         } 
@@ -122,11 +124,12 @@ export class EmployeeService {
         let empTable: EmployeeRow[] = [];
         let atLevel = 0;
         
-        let mgrId = this.nameToId[rootManager]
+        let mgrId = this.nameToIdLower[rootManager.toLowerCase()]
         let subMgrs: Employee[] = [];
         let mgrObj: Employee = this.employeeById[mgrId];
         let empObj: Employee; 
         if (!mgrObj) {
+            this.updateManagerChain(null);
             return [];
         }
         // update manager chain
@@ -177,14 +180,6 @@ export class EmployeeService {
         return empTable;
     }
 
-    private getEmployeeTeamByName(employeeName: string) {
-        if (employeeName in this.nameToId) {
-            let employeeId = this.nameToId[employeeName];
-            return this.getEmployeeTeamById(employeeId);
-        } else {
-            return null
-        }
-    }
 
     private getEmployeeTeamById(employeeId: string) {
         let employee: Employee = this.employeeById[employeeId];
