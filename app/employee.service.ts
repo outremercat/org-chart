@@ -171,9 +171,13 @@ export class EmployeeService {
                 subMgrs.push(empObj);
             }
 
-            // emit rows for the non-managers 
+            // emit rows for the leaves - these could still be managers if mode is directs only
             for (let empObj of nonManagersTemp) {
-                let anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
+                if (empObj.isManager()) {
+                    let anotherRow = { level: atLevel, team: empObj.getTeam() , title: empObj.getTitle(), name: empObj.getFullName() };         
+                } else {
+                    let anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
+                }
                 //console.log("Adding employee: " + empObj.getFullName());
                 rowCount++
                 empTable.push(anotherRow);
