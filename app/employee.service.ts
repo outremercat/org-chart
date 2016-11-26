@@ -13,9 +13,6 @@ export class EmployeeService {
     private employeeById: {[key: string] : Employee} = {}       // map employee ID to Employee object
     private nameToId: {[key: string] : string} = {}      // map employee names to employee ID
     private nameToIdLower: {[key: string] : string} = {}      // map employee names (lower case) to employee ID
-    private emailToId: {[key: string] : string} = {}     // map e-mail address to employee ID
-    private idToTeam: {[key: string] : string} = {}      // map employee ID to team names
-    private engTeamtoId: {[key: string] : string} = {}   // map team to manager ID 
     private employeeNames: Array<string> = [];           // array containing all names
     private rootEmployee: string;
 
@@ -56,14 +53,9 @@ export class EmployeeService {
 
             let employeeId = emp.getEmployeeId();
 
-            if (emp.isManager()) {
-                this.addEmployeeToTeam(emp.getTeam(), employeeId);
-            }
-
             this.employeeById[employeeId] = emp;
             this.nameToId[emp.getFullName()] = employeeId;
             this.nameToIdLower[emp.getFullName().toLowerCase()] = employeeId;
-            this.emailToId[emp.getEmail()] = employeeId;
             
             empls.push(emp);
 
@@ -85,10 +77,6 @@ export class EmployeeService {
         this.employeeNames = Object.keys(this.nameToId)
     }
 
-    private addEmployeeToTeam(teamString: any, employeeId: any) {
-        this.engTeamtoId[teamString] = employeeId;
-        this.idToTeam[employeeId] = teamString;
-    }
 
     private handleError (error: Response | any) {
         // In a real world app, we might use a remote logging infrastructure
@@ -182,17 +170,7 @@ export class EmployeeService {
         return empTable;
     }
 
-
-    private getEmployeeTeamById(employeeId: string) {
-        let employee: Employee = this.employeeById[employeeId];
-        if (employee.isManager()) {
-            return employee.getTeam();
-        }
-        let mgrId = employee.getMgrId()
-        return this.idToTeam[mgrId]
-    }
-
-    private getNameFromId(empId: string) {
+      private getNameFromId(empId: string) {
         return this.employeeById[empId].getFullName()
     }
 
