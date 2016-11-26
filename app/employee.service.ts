@@ -155,14 +155,16 @@ export class EmployeeService {
             atLevel += 1;
             for (let empId of empList) { 
                 empObj = this.employeeById[empId];
-                if (empObj.isManager() && recursive && empObj != mgrObj) {
-                    empObj.level = atLevel;
-                    subMgrs.push(empObj);
-                } else {
-                    let anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
-                    //console.log("Adding employee: " + empObj.getFullName());
-                    rowCount++
-                    empTable.push(anotherRow);
+                if(empObj!= mgrObj) {
+                    if (empObj.isManager() && recursive) {
+                        empObj.level = atLevel;
+                        subMgrs.push(empObj);
+                    } else {
+                        let anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
+                        //console.log("Adding employee: " + empObj.getFullName());
+                        rowCount++
+                        empTable.push(anotherRow);
+                    }
                 }
             }
             if (recursive) {

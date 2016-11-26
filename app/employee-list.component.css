@@ -22,4 +22,8 @@
 /* manager chain class */
 .managerchain {
     display:inline;
+    cursor: pointer;
+}
+.nonmanager {
+    display:inline;
 }

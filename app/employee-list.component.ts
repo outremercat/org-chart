@@ -49,4 +49,10 @@ export class EmployeeListComponent implements OnInit,OnChanges {
         return (empObj.level-1)*40;
     }
 
+    managerClicked(managerName: string) : void {
+        this.searchTerm = managerName;
+        this.employees = this.employeeService.createEmployeeTable(this.searchTerm, this.directsOnly);
+        this.managerChain = this.employeeService.lastManagerChain;
+    }
+    
 }
