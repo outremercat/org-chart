@@ -96,7 +96,7 @@ export class Employee {
         return (this.getFullName() == "Scott \"Dietz\" Dietzen")
     }
 
-    addEmployee(employeeId : string) : void {
-        this.employeeList.push(employeeId)
+    addEmployee(employee : Employee) : void {
+        this.employeeList.push(employee)
     }
 }

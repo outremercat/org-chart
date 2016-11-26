@@ -71,7 +71,7 @@ export class EmployeeService {
 
             if (mgrId in this.employeeById) {
                 let mgr : Employee = this.employeeById[mgrId];
-                mgr.addEmployee(empId)
+                mgr.addEmployee(emp)
             }
         }
         this.employeeNames = Object.keys(this.nameToId)
@@ -140,21 +140,45 @@ export class EmployeeService {
             rowCount++;
             empTable.push(nextRow);
             let empList = mgrObj.getEmployees();
-            atLevel += 1;
-            for (let empId of empList) { 
-                empObj = this.employeeById[empId];
+
+            atLevel += 1
+            // sort empList
+            // create two lists - one with non-managers and one with managers
+            // sort managers decending, sort non-managers ascending - that way it will all
+            // display in alphabetical order
+            let managersTemp = <any>[];
+            let nonManagersTemp = <any>[];
+            for (let empObj of empList) { 
                 if(empObj!= mgrObj) {
                     if (empObj.isManager() && recursive) {
                         empObj.level = atLevel;
-                        subMgrs.push(empObj);
+                        managersTemp.push(empObj);
                     } else {
-                        let anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
-                        //console.log("Adding employee: " + empObj.getFullName());
-                        rowCount++
-                        empTable.push(anotherRow);
+                        nonManagersTemp.push(empObj);
                     }
-                }
+                }    
             }
+            // sort decending  Z-A
+            managersTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? -1 : 
+                         ((b.getFullName() > a.getFullName()) ? 1 : 0);} ); 
+
+            // sort ascending A-Z 
+            nonManagersTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? 1 : 
+                         ((b.getFullName() > a.getFullName()) ? -1 : 0);} ); 
+
+            // add managers to backqueue of managers
+            for (let empObj of managersTemp) { 
+                subMgrs.push(empObj);
+            }
+
+            // emit rows for the non-managers 
+            for (let empObj of nonManagersTemp) {
+                let anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
+                //console.log("Adding employee: " + empObj.getFullName());
+                rowCount++
+                empTable.push(anotherRow);
+            }
+
             if (recursive) {
                 if (subMgrs.length > 0) {
                     mgrObj = subMgrs.pop();
