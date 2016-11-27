@@ -1,59 +1,51 @@
 export class Employee {
 
     private mydata: [{[key: string] : string}] = [{}];
-    private employeeList: [any];
+    private employeeList: Array<Employee>;
     level : number;
 
     constructor(mdata: [{[key: string] : string}]) {
         this.mydata = mdata;
-        this.employeeList = <any>[]
+        this.employeeList = [];
     }
 
-    getFullName() {
+    getFullName(): string {
         return this.mydata['CF_First_Last_Name'];
     }
 
-    getCostCenterHierarchy() {
+    getCostCenterHierarchy(): string {
         return this.mydata['Cost_Center_Hierarchy'];
     }
 
-    getCostCenterName() {
+    getCostCenterName(): string {
         return this.mydata['Cost_Center_-_Name'];
     }    
 
-    getId() {
+    getId(): string {
         return this.mydata['Employee_ID'];
     }
 
-    isManager() {
+    isManager(): boolean {
         return (this.mydata['isManager'] == "1");
     }
 
-    isDirector() {
-        return this.mydata['businessTitle'].startsWith('Director')
-    }
-
-    isVP() {
-        return this.mydata['businessTitle'].startsWith('VP')
-    }
-
-    getEmployeeId() {
+    getEmployeeId(): string {
         return this.mydata['Employee_ID'];
     } 
 
-    getEmail() {
+    getEmail(): string {
         return this.mydata['primaryWorkEmail'];
     }
 
-    getMgrId() {
+    getMgrId(): string {
         return this.mydata['Manager_ID'];
     }
 
-    getMgrName() {
+    getMgrName(): string {
         return this.mydata['Manager'];
     }
         
-    getTeam() {
+    getTeam(): string {
         // chop of the person's name which seems to appear in the team name
         if ('supervisoryOrganizationsManaged' in this.mydata) {
             return (this.mydata['supervisoryOrganizationsManaged'].split("(")[0].trim());
@@ -62,34 +54,12 @@ export class Employee {
         }
     }
 
-    getEmployees() {
+    getEmployees(): Array<Employee> {
         return this.employeeList;
     }
 
-    getTitle() {
+    getTitle(): string {
         return this.mydata['businessTitle'];
-    }
-
-    inBobOrg() {
-        // Only get folks in Bob's reporting chain """
-        if (this.getCostCenterHierarchy() != '40000 Engineering' && 
-                this.getCostCenterHierarchy() != '70000 Iridium') {
-            return false;
-        }
-        if (this.getCostCenterHierarchy() == '70000 Iridium') {
-            if (this.getCostCenterName() != 'Iridium') {
-                return false;
-            }
-        }
-        return true
-    }
-
-    notEngineer(): boolean {
-        return (this.mydata['businessTitle'] == 'Office Manager');
-    }
-
-    reportsToCoz(): boolean {
-        return (this.mydata['Manager'] == 'John "Coz" Colgrove'); 
     }
 
     isScott(): boolean {

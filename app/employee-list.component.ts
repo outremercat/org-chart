@@ -1,12 +1,10 @@
 import { Component, Input, OnChanges, SimpleChange, EventEmitter, Output } from '@angular/core';
+import { OnInit } from '@angular/core';
 
 
 import { Employee } from './employee';
 import { EmployeeRow } from './employee-row'
 import { EmployeeSearchComponent } from './employee-search.component'
-
-import { OnInit } from '@angular/core';
-
 import { EmployeeService } from "./employee.service";
 
 @Component({
@@ -27,18 +25,19 @@ export class EmployeeListComponent implements OnInit,OnChanges {
     constructor (private employeeService: EmployeeService) {
     }
 
-    ngOnInit() { 
+    ngOnInit(): void { 
         this.getEmployees(); 
     }
 
-    ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
+    // gets called when Input properties change
+    ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
         //this.employees = this.employeeService.createEmployeeTable(changes['searchTerm'].currentValue,
         //                                                          changes['directsOnly'].currentValue);
         this.employees = this.employeeService.createEmployeeTable(this.searchTerm, this.directsOnly);
         this.managerChain = this.employeeService.lastManagerChain;
     }
 
-    getEmployees() {
+    getEmployees(): void {
         this.employeeService.getEmployees(this.searchTerm)
             .then(employees => { this.employees = employees;
                                  this.managerChain = this.employeeService.lastManagerChain; 

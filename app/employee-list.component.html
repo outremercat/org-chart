@@ -2,8 +2,8 @@
 <div style="width: 100vw;">
     <div  *ngFor="let nextManager of managerChain" class="managerchain" 
           (click)="managerClicked(nextManager.getFullName())">
-      {{nextManager.getFullName()}}
-      <img src="small_arrow.png" />
+          {{nextManager.getFullName()}}
+          <img src="small_arrow.png" />
     </div>
 </div>
 <br>

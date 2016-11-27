@@ -57,8 +57,9 @@ export class EmployeeSearchComponent implements OnInit {
 
     refreshSearchFromDirectsOnly(): void {
         // notify the other components
+        this.directsOnly = !this.directsOnly
         this.onNewSearchTerm.emit(this.searchTerm);
-        this.onNewDirectsOnly.emit(!this.directsOnly);
+        this.onNewDirectsOnly.emit(this.directsOnly);
     }
 
 
@@ -67,7 +68,7 @@ export class EmployeeSearchComponent implements OnInit {
         searchBox.value = "";
     }
 
-    // process cursor up, down and enter
+    // process cursor up, down, enter and esc
     public keyDown(event: KeyboardEvent) {
         if (event.which === 40 || event.keyCode === 40) { // DOWN    
             // If not found, then activate the first employee 

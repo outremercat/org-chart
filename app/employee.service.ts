@@ -8,18 +8,19 @@ import { EmployeeRow } from './employee-row';
 
 @Injectable()
 export class EmployeeService {
+    // loads employee data from json server and massages it so it can be displayed 
 
     private employeesUrl = 'http://vm-dan.dev.purestorage.com/org.json'
-    private employeeById: {[key: string] : Employee} = {}       // map employee ID to Employee object
-    private nameToId: {[key: string] : string} = {}      // map employee names to employee ID
-    private nameToIdLower: {[key: string] : string} = {}      // map employee names (lower case) to employee ID
-    private employeeNames: Array<string> = [];           // array containing all names
+    private employeeById: {[key: string] : Employee} = {}        // map employee ID to Employee object
+    private nameToId: {[key: string] : string} = {}              // map employee names to employee ID
+    private nameToIdLower: {[key: string] : string} = {}         // map employee names (lower case) to employee ID
+    private employeeNames: Array<string> = [];                   // array containing all names
     private rootEmployee: string;
-
-    public lastManagerChain: Array<any> = [];            // holds chain of managers, updated by createEmployeeTable
+    public lastManagerChain: Array<Employee> = [];                    // holds chain of managers, updated by createEmployeeTable
 
     constructor(private http: Http) { }
 
+    // fetches data from json server
     getEmployees(rEmployee : string): Promise<EmployeeRow[]> {
         this.rootEmployee = rEmployee; 
         return this.http.get(this.employeesUrl)
@@ -28,7 +29,7 @@ export class EmployeeService {
                     .catch(this.handleError);
     }
 
-
+    // parses json and creates the org chart table
     private extractData= (res: Response) => {
         // server response contains an array of entries as follows: "Report_Entry" : [ rec1, rec2, ...] 
         let body = res.json();
@@ -38,19 +39,29 @@ export class EmployeeService {
         return emplRows;
     }
 
-    private parseJson(empsData : [any]){
+    // handles errors in case the server request fails
+    private handleError (error: Response | any): Promise<void> {
+        let errMsg: string;
+        if (error instanceof Response) {
+            const body = error.json() || '';
+            const err = body.error || JSON.stringify(body);
+            errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+        } else {
+            errMsg = error.message ? error.message : error.toString();
+        }
+        console.error(errMsg);
+        return Promise.reject(errMsg);
+    }
+
+
+    // parses json data from the server into a set of data structure that make it easy to 
+    // build the org chart
+    private parseJson(empsData : [[{[key: string] : string}]]): void {
        // map to objects
         let empls : Employee[] = [];
         let count : number = 0;
-        for (let entry of empsData) {
+        for (let entry  of empsData) {
             let emp = new Employee(entry);
-
-            // skip anyone not in Bob's group
-            /*
-            if (!emp.inBobOrg() || emp.notEngineer()) {
-                continue;
-            }*/
-
             let employeeId = emp.getEmployeeId();
 
             this.employeeById[employeeId] = emp;
@@ -64,9 +75,6 @@ export class EmployeeService {
         // second pass to setup employee list for mgrs and to populate team map
         for (let empId in this.employeeById) {
             let emp : Employee = this.employeeById[empId];
-            /*if (emp.reportsToCoz() || emp.isBob()) {
-                continue;
-            } */
             let mgrId : string = emp.getMgrId();
 
             if (mgrId in this.employeeById) {
@@ -77,21 +85,7 @@ export class EmployeeService {
         this.employeeNames = Object.keys(this.nameToId)
     }
 
-
-    private handleError (error: Response | any) {
-        // In a real world app, we might use a remote logging infrastructure
-        let errMsg: string;
-        if (error instanceof Response) {
-            const body = error.json() || '';
-            const err = body.error || JSON.stringify(body);
-            errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
-        } else {
-            errMsg = error.message ? error.message : error.toString();
-        }
-        console.error(errMsg);
-        return Promise.reject(errMsg);
-    }
-
+    // updates the manager chain for a given employee
     private updateManagerChain(empId: Employee) : void {
         // get manager chain
         this.lastManagerChain = [];
@@ -103,7 +97,9 @@ export class EmployeeService {
         this.lastManagerChain.reverse();
 
     }
-    public createEmployeeTable(rootManager : string, directsOnly: boolean) {
+    
+    // creates the org chart
+    public createEmployeeTable(rootManager : string, directsOnly: boolean): EmployeeRow[] {
         // create an array of EmployeeRow where each row looks as follows:
         //    name, title, team, level
         // 'team' is set only for the manager of the team
@@ -146,8 +142,8 @@ export class EmployeeService {
             // create two lists - one with non-managers and one with managers
             // sort managers decending, sort non-managers ascending - that way it will all
             // display in alphabetical order
-            let managersTemp = <any>[];
-            let nonManagersTemp = <any>[];
+            let managersTemp: Array<Employee> = [];
+            let nonManagersTemp: Array<Employee> = [];
             for (let empObj of empList) { 
                 if(empObj!= mgrObj) {
                     if (empObj.isManager() && recursive) {
@@ -172,13 +168,13 @@ export class EmployeeService {
             }
 
             // emit rows for the leaves - these could still be managers if mode is directs only
+            let anotherRow : EmployeeRow;  
             for (let empObj of nonManagersTemp) {
                 if (empObj.isManager()) {
-                    let anotherRow = { level: atLevel, team: empObj.getTeam() , title: empObj.getTitle(), name: empObj.getFullName() };         
+                    anotherRow = { level: atLevel, team: empObj.getTeam() , title: empObj.getTitle(), name: empObj.getFullName() };         
                 } else {
-                    let anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
+                    anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
                 }
-                //console.log("Adding employee: " + empObj.getFullName());
                 rowCount++
                 empTable.push(anotherRow);
             }
@@ -198,12 +194,12 @@ export class EmployeeService {
         return empTable;
     }
 
-      private getNameFromId(empId: string) {
+      private getNameFromId(empId: string): string {
         return this.employeeById[empId].getFullName()
     }
 
-    searchCandidates (pattern : string) {
-        console.log("searchCandidates: " + pattern)
+    // returns a sorted list of names that match a pattern (case-insensitive)
+    searchCandidates (pattern : string): Array<string> {
         if (pattern == null || pattern == undefined) {
             return [];
         }
