@@ -10,10 +10,14 @@
 <ul>
     <li class="emplist" *ngFor="let employee of employees" 
         [style.margin-left.px]="getIndent(employee)" >
-        <div *ngIf="employee.team != ''" (click)="managerClicked(employee.name)"
+        <div *ngIf="employee.team != '' && employee.name != ''" (click)="managerClicked(employee.name)"
              class="managerchain">
              {{ employee.name}} - {{ employee.title }} &nbsp;&nbsp;
              <b> ({{employee.team}})</b>
+        </div>
+        <div *ngIf="employee.team != '' && employee.name == ''" 
+             >
+             <b> {{employee.team}}</b>
         </div>
         <div *ngIf="employee.team == ''" class="nonmanager">
              {{ employee.name}} - {{ employee.title }} 

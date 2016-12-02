@@ -1,12 +1,15 @@
 export class Employee {
 
     private mydata: [{[key: string] : string}] = [{}];
-    private employeeList: Array<Employee>;
+    private icList: Array<Employee>;
+    private managerList: Array<Employee>;
     level : number;
+    private teamList: Array<String>;                 // list of teams this person is in or manages 
 
     constructor(mdata: [{[key: string] : string}]) {
         this.mydata = mdata;
-        this.employeeList = [];
+        this.icList = [];
+        this.managerList = [];
     }
 
     getFullName(): string {
@@ -45,17 +48,63 @@ export class Employee {
         return this.mydata['Manager'];
     }
         
-    getTeam(): string {
-        // chop of the person's name which seems to appear in the team name
+    getTeamsManaged(): Array<string> {
+        // comes from workday as follows: "supervisoryOrganizationsManaged": "Dedup (Salil Gokhale); DB Res (Salil Gokhale)"
+        let teams: Array<string> = [];
+
         if ('supervisoryOrganizationsManaged' in this.mydata) {
-            return (this.mydata['supervisoryOrganizationsManaged'].split("(")[0].trim());
+            let tList: Array<string> = this.mydata['supervisoryOrganizationsManaged'].split(";");
+            for (let aTeam of tList) {
+                if (!aTeam.includes("(inactive)")) {
+                    teams.push(aTeam.split("(")[0].trim());
+                }
+            }
+            return teams;
         } else {
-            return "";
+            return [];
         }
     }
 
-    getEmployees(): Array<Employee> {
-        return this.employeeList;
+   getTeamsManagedFullName(): Array<string> {
+        // comes from workday as follows: "supervisoryOrganizationsManaged": "Dedup (Salil Gokhale); DB Res (Salil Gokhale)"
+        // without the person's name the team names are not unique - so we need to keep that 
+        let teams: Array<string> = [];
+
+        if ('supervisoryOrganizationsManaged' in this.mydata) {
+            let tList: Array<string> = this.mydata['supervisoryOrganizationsManaged'].split(";");
+            for (let aTeam of tList) {
+                if (!aTeam.includes("(inactive)")) {
+                    teams.unshift(aTeam.trim());
+                }
+            }
+            return teams;
+        } else {
+            return [];
+        }
+    }
+
+
+    getTeam(): string {
+        return this.mydata['Supervisory_Organization'].replace(" (Inherited)", "").trim();
+    }
+
+    private getEmployees(empList: Array<Employee>, teamName: string) {
+        let theList: Array<Employee> = [];
+        for (let employee of empList) {
+            if (employee.getTeam() == teamName) {
+                theList.push(employee);
+            }
+        }
+        return theList;
+
+    }
+
+    getICs(teamName: string): Array<Employee> {
+        return this.getEmployees(this.icList, teamName);
+    }
+
+    getManagers(teamName: string): Array<Employee> {
+        return this.getEmployees(this.managerList, teamName);
     }
 
     getTitle(): string {
@@ -66,7 +115,11 @@ export class Employee {
         return (this.getFullName() == "Scott \"Dietz\" Dietzen")
     }
 
-    addEmployee(employee : Employee) : void {
-        this.employeeList.push(employee)
+    addIC(employee : Employee) : void {
+        this.icList.push(employee)
+    }
+
+    addManager(employee : Employee) : void {
+        this.managerList.push(employee)
     }
 }

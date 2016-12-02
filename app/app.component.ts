@@ -9,6 +9,8 @@ import { Component, ViewChild } from '@angular/core';
 export class AppComponent {
 
     searchTerm : string = "Scott \"Dietz\" Dietzen";
+
+    //searchTerm : string = "Brian Peterson";
     directsOnly: boolean = false;
     
     updateSearchTerm(newTerm: string) {
