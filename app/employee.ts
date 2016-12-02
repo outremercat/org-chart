@@ -3,6 +3,7 @@ export class Employee {
     private mydata: [{[key: string] : string}] = [{}];
     private employeeList: Array<Employee>;
     level : number;
+    private teamList: Array<String>;                 // list of teams this person is in or manages 
 
     constructor(mdata: [{[key: string] : string}]) {
         this.mydata = mdata;
@@ -45,13 +46,25 @@ export class Employee {
         return this.mydata['Manager'];
     }
         
-    getTeam(): string {
-        // chop of the person's name which seems to appear in the team name
+    getTeamsManaged(): Array<string> {
+        // comes from workday as follows: "supervisoryOrganizationsManaged": "Dedup (Salil Gokhale); DB Res (Salil Gokhale)"
+        let teams: Array<string> = [];
+
         if ('supervisoryOrganizationsManaged' in this.mydata) {
-            return (this.mydata['supervisoryOrganizationsManaged'].split("(")[0].trim());
+            let tList: Array<string> = this.mydata['supervisoryOrganizationsManaged'].split(";");
+            for (let aTeam of tList) {
+                if (!aTeam.includes("(inactive)")) {
+                    teams.push(aTeam.split("(")[0].trim());
+                }
+            }
+            return teams;
         } else {
-            return "";
+            return [];
         }
+    }
+
+    getTeam(): string {
+        return this.mydata['Supervisory_Organization'].split("(")[0].trim();
     }
 
     getEmployees(): Array<Employee> {

@@ -97,6 +97,37 @@ export class EmployeeService {
         this.lastManagerChain.reverse();
 
     }
+
+    private areEmployeesInTeam(emplList: Array<Employee>, team: string): boolean {
+        for (let empl of emplList) {
+            if (empl.getTeam() == team) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private areEmployeesInDifferentTeams(emplList: Array<Employee>): boolean {
+        let myEmplList: Array<string> = [];
+        for (let empl of emplList) {
+            myEmplList.push(empl.getTeam());
+        }
+        for (let i = 1; i < myEmplList.length; i++) {
+            if (myEmplList[i] != myEmplList[0]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private teamsAsString(teams: Array<string>): string {
+        let teamNames = "";
+        for (let aTeam of teams) {
+            teamNames += (aTeam + ", ")
+        }
+        teamNames = teamNames.slice(0, -2);  // remove last ","
+        return teamNames;
+    }
     
     // creates the org chart
     public createEmployeeTable(rootManager : string, directsOnly: boolean): EmployeeRow[] {
@@ -127,23 +158,22 @@ export class EmployeeService {
             recursive = false;
             this.lastManagerChain.pop();
         }
-        let rowCount : number = 0;
-
         while(true) {
-            //console.log("Row count: " + rowCount)
-            let nextRow = { level: atLevel, team: mgrObj.getTeam(), title: mgrObj.getTitle(), name: mgrObj.getFullName() };         
+            let teams = mgrObj.getTeamsManaged();
+            // get the team(s) and prep that string
+             let nextRow = { level: atLevel, team: this.teamsAsString(teams), title: mgrObj.getTitle(), name: mgrObj.getFullName() };         
             //console.log("Adding manager: " + mgrObj.getFullName());
-            rowCount++;
             empTable.push(nextRow);
-            let empList = mgrObj.getEmployees();
-
             atLevel += 1
-            // sort empList
+
+            // loop over teams this manager is managing
             // create two lists - one with non-managers and one with managers
             // sort managers decending, sort non-managers ascending - that way it will all
             // display in alphabetical order
             let managersTemp: Array<Employee> = [];
             let nonManagersTemp: Array<Employee> = [];
+            let empList = mgrObj.getEmployees();
+
             for (let empObj of empList) { 
                 if(empObj!= mgrObj) {
                     if (empObj.isManager() && recursive) {
@@ -152,33 +182,52 @@ export class EmployeeService {
                     } else {
                         nonManagersTemp.push(empObj);
                     }
-                }    
+                }  
             }
             // sort decending  Z-A
             managersTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? -1 : 
-                         ((b.getFullName() > a.getFullName()) ? 1 : 0);} ); 
+                        ((b.getFullName() > a.getFullName()) ? 1 : 0);} ); 
 
             // sort ascending A-Z 
             nonManagersTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? 1 : 
-                         ((b.getFullName() > a.getFullName()) ? -1 : 0);} ); 
+                        ((b.getFullName() > a.getFullName()) ? -1 : 0);} ); 
+
+                    
 
             // add managers to backqueue of managers
             for (let empObj of managersTemp) { 
                 subMgrs.push(empObj);
             }
+            
+            for (let aTeam of teams) {
+                let showTeamLine: boolean = (teams.length > 1 && 
+                    this.areEmployeesInTeam(nonManagersTemp, aTeam) && 
+                    this.areEmployeesInDifferentTeams(nonManagersTemp));
 
-            // emit rows for the leaves - these could still be managers if mode is directs only
-            let anotherRow : EmployeeRow;  
-            for (let empObj of nonManagersTemp) {
-                if (empObj.isManager()) {
-                    anotherRow = { level: atLevel, team: empObj.getTeam() , title: empObj.getTitle(), name: empObj.getFullName() };         
-                } else {
-                    anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
+                // if manager has more than one team, emit a line for that
+                if (showTeamLine) {
+                    let teamRow = { level: atLevel, team: aTeam, title: "", name: "" };         
+                    empTable.push(teamRow);
+                    atLevel++;
                 }
-                rowCount++
-                empTable.push(anotherRow);
+               
+                // emit rows for the leaves - these could still be managers if mode is directs only
+                let anotherRow : EmployeeRow;  
+                for (let empObj of nonManagersTemp) {
+                    if (empObj.getTeam() == aTeam) {     
+                        if (empObj.isManager()) {
+                            anotherRow = { level: atLevel, team: this.teamsAsString(empObj.getTeamsManaged()), 
+                                           title: empObj.getTitle(), name: empObj.getFullName() };         
+                        } else {
+                            anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
+                        }
+                        empTable.push(anotherRow);
+                    }
+                }
+                if (showTeamLine) {
+                    atLevel -= 1;
+                }
             }
-
             if (recursive) {
                 if (subMgrs.length > 0) {
                     mgrObj = subMgrs.pop();
