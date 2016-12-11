@@ -16,6 +16,7 @@ export class EmployeeSearchComponent implements OnInit {
     @Output() onNewSearchTerm = new EventEmitter<string>();     // used by EmployeeList to update based on this search term
     @Output() onNewDirectsOnly = new EventEmitter<boolean>();     // used by EmployeeList to update based on the directs only checkbox
 
+
     employees: string[];              // array of employees
     aSearchBox: string;               // text in the search box
     directsOnly: boolean;             // checkbox 

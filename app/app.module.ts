@@ -9,6 +9,7 @@ import { AppComponent }  from './app.component';
 import { EmployeeService } from './employee.service'
 import { EmployeeListComponent } from './employee-list.component'
 import { EmployeeSearchComponent } from './employee-search.component'
+import { EmployeeDetailsComponent } from './employee-details.component'
 
 
 
@@ -20,7 +21,8 @@ import { EmployeeSearchComponent } from './employee-search.component'
 
   declarations: [ AppComponent,
                   EmployeeListComponent,
-                  EmployeeSearchComponent
+                  EmployeeSearchComponent,
+                  EmployeeDetailsComponent
   ],
 
   providers:    [ EmployeeService ],

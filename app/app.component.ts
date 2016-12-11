@@ -9,8 +9,7 @@ import { Component, ViewChild } from '@angular/core';
 export class AppComponent {
 
     searchTerm : string = "Scott \"Dietz\" Dietzen";
-
-    //searchTerm : string = "Brian Peterson";
+    //searchTerm : string = "Gilbert Tawil";
     directsOnly: boolean = false;
     
     updateSearchTerm(newTerm: string) {

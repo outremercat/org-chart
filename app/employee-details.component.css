@@ -1,0 +1,20 @@
+/* empdetails class */
+.empdetails {
+    position: fixed;
+    right: 50px;
+    width: 300px;
+    top: 120px;
+    border: 2px solid #ff6600;
+    background: #efefef;
+    border-radius: 5px;
+    
+}
+
+.boxcloser {
+    cursor: pointer;
+}
+
+.empdata {
+    border-spacing: 5px;
+    border-collapse: separate;
+}

@@ -18,11 +18,12 @@ export class EmployeeService {
     private employeeNames: Array<string> = [];                    // array containing all names
     private rootEmployee: string;
     public lastManagerChain: Array<Employee> = [];                // holds chain of managers, updated by createEmployeeTable
+    public lastOrgSize: number;                                   // holds size of org, updated by createEmployeeTable
 
     constructor(private http: Http) { }
 
     // fetches data from json server
-    getEmployees(rEmployee : string): Promise<EmployeeRow[]> {
+    public getEmployees(rEmployee : string): Promise<EmployeeRow[]> {
         this.rootEmployee = rEmployee; 
         return this.http.get(this.employeesUrl)
                     .toPromise()
@@ -88,6 +89,8 @@ export class EmployeeService {
                 } else {
                     mgr.addIC(emp);
                 }
+                // update teamToManager
+                this.teamToManager[emp.getTeam()] = mgr;
 
             }
         }
@@ -157,6 +160,8 @@ export class EmployeeService {
         let nextTeam: {teamname : string, level: number};       
         let managersEmitted: Array<string> = [];
 
+        this.lastOrgSize = 0;
+
         while(nextTeam = teamStack.pop() ){
             
             mgrObj = this.teamToManager[nextTeam.teamname];
@@ -169,6 +174,7 @@ export class EmployeeService {
                 let nextRow = { level: atLevel, team: this.teamsAsString(mgrObj.getTeamsManaged()), title: mgrObj.getTitle(), name: mgrObj.getFullName() };         
                 empTable.push(nextRow);
                 managersEmitted.push(mgrId);
+                this.lastOrgSize++;
             }
 
             atLevel++;   
@@ -203,6 +209,7 @@ export class EmployeeService {
             for (let empObj of icsTemp) {
                 anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
                 empTable.push(anotherRow);
+                this.lastOrgSize++;
             }
 
             if (recursive) {
@@ -222,6 +229,7 @@ export class EmployeeService {
                         let teams = empObj.getTeamsManaged();
                         anotherRow = { level: atLevel, team: this.teamsAsString(teams), title: empObj.getTitle(), name: empObj.getFullName() };         
                         empTable.push(anotherRow);
+                        this.lastOrgSize++;
                     }
                 }
             } 
@@ -231,7 +239,7 @@ export class EmployeeService {
 
 
     // returns a sorted list of names that match a pattern (case-insensitive)
-    searchCandidates (pattern : string): Array<string> {
+    public searchCandidates (pattern : string): Array<string> {
         if (pattern == null || pattern == undefined) {
             return [];
         }
@@ -249,5 +257,9 @@ export class EmployeeService {
         } 
         // sort
         return candidates.sort();
+    }
+
+    public getEmployee(empName: string) : Employee {
+        return this.employeeById[this.nameToId[empName]];
     }
 }

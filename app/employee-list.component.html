@@ -10,7 +10,7 @@
 <ul>
     <li class="emplist" *ngFor="let employee of employees" 
         [style.margin-left.px]="getIndent(employee)" >
-        <div *ngIf="employee.team != '' && employee.name != ''" (click)="managerClicked(employee.name)"
+        <div *ngIf="employee.team != '' && employee.name != ''" (click)="managerClicked(employee.name, $event.pageY)"
              class="managerchain">
              {{ employee.name}} - {{ employee.title }} &nbsp;&nbsp;
              <b> ({{employee.team}})</b>
@@ -19,10 +19,15 @@
              >
              <b> {{employee.team}}</b>
         </div>
-        <div *ngIf="employee.team == ''" class="nonmanager">
+        <div *ngIf="employee.team == ''" class="nonmanager" (click)="employeeClicked(employee.name, $event.pageY)">
              {{ employee.name}} - {{ employee.title }} 
         </div>
     </li>
 </ul>
+<employee-details *ngIf="detailsOn" [employee] = "employeeSelected" 
+                        [orgSize] = "orgSizeSelected"
+                        [directsOnly] = "directsOnly"
+                        (boxClosed)="removeDetailsBox($event)" >
+</employee-details>
 
 <p class="error" *ngIf="errorMessage">{{errorMessage}}</p>

@@ -25,4 +25,5 @@
 }
 .nonmanager {
     display:inline;
+    cursor: pointer;
 }

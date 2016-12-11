@@ -40,6 +40,10 @@ export class Employee {
         return this.mydata['primaryWorkEmail'];
     }
 
+    getEmailPrefix(): string {
+        return this.mydata['primaryWorkEmail'].replace("purestorage.com","");
+    }
+
     getMgrId(): string {
         return this.mydata['Manager_ID'];
     }
@@ -47,7 +51,22 @@ export class Employee {
     getMgrName(): string {
         return this.mydata['Manager'];
     }
+
+    getPhoneNumber(): string {
+        return this.mydata['primaryWorkPhone'];
+    }
         
+    getHireDate(): string {
+        let dateSplit = this.mydata['Hire_Date'].split("-"); 
+        return dateSplit[1]+"/"+dateSplit[2]+"/"+dateSplit[0];
+    }
+
+    getWorkAddress() : Array<string> {
+        let addressSplit = this.mydata['Full_Work_Address'].split("&#xa;");
+        return addressSplit;
+
+    }
+
     getTeamsManaged(): Array<string> {
         // comes from workday as follows: "supervisoryOrganizationsManaged": "Dedup (Salil Gokhale); DB Res (Salil Gokhale)"
         let teams: Array<string> = [];
@@ -75,6 +94,12 @@ export class Employee {
             for (let aTeam of tList) {
                 if (!aTeam.includes("(inactive)")) {
                     teams.unshift(aTeam.trim());
+                }
+            }
+            // sometimes managers inherit a team - those need to be added as well - check the IC list
+            for (let aIC of this.icList) {
+                if (teams.indexOf(aIC.getTeam()) == -1)  {
+                    teams.unshift(aIC.getTeam());
                 }
             }
             return teams;

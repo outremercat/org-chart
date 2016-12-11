@@ -1,0 +1,28 @@
+<div class="empdetails" >
+    <table width="100%">
+       <tr><td width="10" align="right" (click)="clickedCloseBox()" class="boxcloser">X&nbsp;</td>
+       </tr>
+    </table>   
+    <table>
+        <tr><td width="10"><td>
+            <table class="empdata">
+                <tr><td width="100%" colspan=2> <b>{{ employee.getFullName() }} </b> </td></tr>
+                <tr *ngIf="!directsOnly && orgSize > 0">
+                    <td style="min-width: 110px;" >Puritans in Org:</td>
+                    <td width="100%">{{ orgSize }} </td>
+                </tr>
+                <tr><td style="min-width: 110px; ">E-Mail: </td>
+                    <td width="100%"><a href="mailto:{{ employee.getEmail() }}">{{ employee.getEmailPrefix() }}</a> </td>
+                </tr>
+                <tr><td>Phone: </td><td><a href="tel:{{ employee.getPhoneNumber() }}">{{ employee.getPhoneNumber() }}</a></td></tr>
+                <tr><td>Puritan since: </td><td>{{ employee.getHireDate() }}</td></tr>
+                <tr><td valign="top">Work address: </td><td>
+                    <span *ngFor="let addressLine of employee.getWorkAddress()">
+                        {{ addressLine }}<br>
+                    </span>
+                </td></tr>
+
+            </table>
+        </td></tr>
+    </table>
+</div>
