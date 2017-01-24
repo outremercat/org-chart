@@ -41,7 +41,11 @@ export class Employee {
     }
 
     getEmailPrefix(): string {
-        return this.mydata['primaryWorkEmail'].replace("purestorage.com","");
+        if ('primaryWorkEmail' in this.mydata) {
+            return this.mydata['primaryWorkEmail'].replace("purestorage.com","");
+        } else {
+            return "";
+        }
     }
 
     getMgrId(): string {

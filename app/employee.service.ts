@@ -63,6 +63,13 @@ export class EmployeeService {
         let count : number = 0;
         for (let entry  of empsData) {
             let emp = new Employee(entry);
+
+            // check if employee is legit (trying to exclude contractors)
+            if (emp.getEmail() == undefined) {
+                // no valid e-mail - don't include
+                continue;
+            }
+
             let employeeId = emp.getEmployeeId();
 
             this.employeeById[employeeId] = emp;
