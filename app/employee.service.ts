@@ -19,6 +19,7 @@ export class EmployeeService {
     private rootEmployee: string;
     public lastManagerChain: Array<Employee> = [];                // holds chain of managers, updated by createEmployeeTable
     public lastOrgSize: number;                                   // holds size of org, updated by createEmployeeTable
+    public lastOrgSizeICs: number;                                // holds number of ICs (non managers) per org
 
     constructor(private http: Http) { }
 
@@ -168,6 +169,7 @@ export class EmployeeService {
         let managersEmitted: Array<string> = [];
 
         this.lastOrgSize = 0;
+        this.lastOrgSizeICs = 0;
 
         while(nextTeam = teamStack.pop() ){
             
@@ -217,6 +219,7 @@ export class EmployeeService {
                 anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
                 empTable.push(anotherRow);
                 this.lastOrgSize++;
+                this.lastOrgSizeICs++;
             }
 
             if (recursive) {

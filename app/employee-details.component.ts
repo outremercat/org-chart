@@ -17,6 +17,7 @@ export class EmployeeDetailsComponent implements OnInit {
     @Input() employee: Employee;
     @Input() yPosition: number = 0;
     @Input() orgSize: number = 0;
+    @Input() orgSizeICs: number = 0;
     @Input() directsOnly: boolean = false;
 
     @Output() boxClosed = new EventEmitter<boolean>(); 

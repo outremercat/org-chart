@@ -26,6 +26,7 @@
 </ul>
 <employee-details *ngIf="detailsOn" [employee] = "employeeSelected" 
                         [orgSize] = "orgSizeSelected"
+                        [orgSizeICs] = "orgSizeICsSelected"
                         [directsOnly] = "directsOnly"
                         (boxClosed)="removeDetailsBox($event)" >
 </employee-details>

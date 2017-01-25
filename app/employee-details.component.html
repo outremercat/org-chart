@@ -21,6 +21,14 @@
                     <td style="min-width: 110px;" >Puritans in Org:</td>
                     <td width="100%">{{ orgSize }} </td>
                 </tr>
+                <tr *ngIf="!directsOnly && orgSize > 0 && employee.isManager()">
+                    <td style="min-width: 110px;" >ICs in Org:</td>
+                    <td width="100%">{{ orgSizeICs }} </td>
+                </tr>
+                <tr *ngIf="!directsOnly && orgSize > 0 && employee.isManager()">
+                    <td style="min-width: 110px;" >Mgrs in Org:</td>
+                    <td width="100%">{{ orgSize - orgSizeICs }} </td>
+                </tr>
                 <tr *ngIf="directsOnly && orgSize > 0 && employee.isManager()">
                     <td style="min-width: 110px;" >Directs:</td>
                     <td width="100%">{{ orgSize-1 }} </td>

@@ -24,6 +24,7 @@ export class EmployeeListComponent implements OnInit,OnChanges {
     detailsOn: boolean = false;
     employeeSelected: Employee;
     orgSizeSelected: number; 
+    orgSizeICsSelected: number;
 
     yPosition: number = 0;
 
@@ -48,6 +49,7 @@ export class EmployeeListComponent implements OnInit,OnChanges {
             .then(employees => { this.employees = employees;
                                  this.managerChain = this.employeeService.lastManagerChain; 
                                  this.orgSizeSelected = this.employeeService.lastOrgSize;
+                                 this.orgSizeICsSelected = this.employeeService.lastOrgSizeICs;
                                });
     }
 
@@ -76,8 +78,10 @@ export class EmployeeListComponent implements OnInit,OnChanges {
         this.detailsOn = true;
         if (employeeName != this.searchTerm) {
             this.orgSizeSelected = 0;
+            this.orgSizeICsSelected = 0;
         } else {
             this.orgSizeSelected = this.employeeService.lastOrgSize;
+            this.orgSizeICsSelected = this.employeeService.lastOrgSizeICs;
         }
     }
 
