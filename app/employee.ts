@@ -97,13 +97,15 @@ export class Employee {
             let tList: Array<string> = this.mydata['supervisoryOrganizationsManaged'].split(";");
             for (let aTeam of tList) {
                 if (!aTeam.includes("(inactive)")) {
-                    teams.unshift(aTeam.trim());
+                    if(teams.indexOf(aTeam.trim()) == -1) {
+                        teams.unshift(aTeam.trim());
+                    }      
                 }
             }
             // sometimes managers inherit a team - those need to be added as well - check the IC list
             for (let aIC of this.icList) {
                 if (teams.indexOf(aIC.getTeam()) == -1)  {
-                    teams.unshift(aIC.getTeam());
+                    teams.unshift(aIC.getTeam()); 
                 }
             }
             return teams;
