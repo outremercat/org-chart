@@ -142,6 +142,10 @@ export class Employee {
         return this.mydata['businessTitle'];
     }
 
+    isContractor(): boolean {
+        return (this.mydata['Worker_Type'] !== "Employee")
+    }
+
     isScott(): boolean {
         return (this.getFullName() == "Scott \"Dietz\" Dietzen")
     }

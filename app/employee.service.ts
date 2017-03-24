@@ -70,6 +70,10 @@ export class EmployeeService {
                 // no valid e-mail - don't include
                 continue;
             }
+            if (emp.isContractor()) {
+                // contractor - don't include
+                continue;
+            }
 
             let employeeId = emp.getEmployeeId();
 
