@@ -23,8 +23,8 @@ export class EmployeeSearchComponent implements OnInit {
 
     activeEmployee: string;           // active (highlighted) employee 
     private activeEmployeeIndex: number = -1;   // active (highlighted) employee index 
-    private activeEmployeeListVisible: boolean;  
-  
+    private activeEmployeeListVisible: boolean;
+
     constructor ( private employeeService: EmployeeService) {
     }
 
@@ -53,12 +53,12 @@ export class EmployeeSearchComponent implements OnInit {
         this.onNewSearchTerm.emit(empl);
         this.onNewDirectsOnly.emit(this.directsOnly);
         this.employees = [];
-        this.aSearchBox = "";
+        this.aSearchBox = '';
     }
 
     refreshSearchFromDirectsOnly(): void {
         // notify the other components
-        this.directsOnly = !this.directsOnly
+        this.directsOnly = !this.directsOnly;
         this.onNewSearchTerm.emit(this.searchTerm);
         this.onNewDirectsOnly.emit(this.directsOnly);
     }
@@ -66,7 +66,7 @@ export class EmployeeSearchComponent implements OnInit {
 
     // clear the value of the search box
     resetSearchBox(searchBox: any) {
-        searchBox.value = "";
+        searchBox.value = '';
     }
 
     // process cursor up, down, enter and esc
@@ -74,7 +74,7 @@ export class EmployeeSearchComponent implements OnInit {
         if (event.which === 40 || event.keyCode === 40) { // DOWN    
             // If not found, then activate the first employee 
             if (this.activeEmployeeIndex === -1) {
-                this.activeEmployeeIndex = 0; 
+                this.activeEmployeeIndex = 0;
                 this.setActiveEmployee();
                 return;
             }
@@ -107,26 +107,26 @@ export class EmployeeSearchComponent implements OnInit {
 
         } else if ((event.which === 10 || event.which === 13 ||
                     event.keyCode === 10 || event.keyCode === 13) &&
-                    this.activeEmployeeListVisible) { // ENTER
+                    this.activeEmployeeListVisible && this.aSearchBox !== '') { // ENTER
 
-            let activeEmployee = this.getActiveEmployee(); 
-            if (activeEmployee != "") {   // this is set if the user selected from the popup and hit return
-                this.refreshSearch(activeEmployee); 
+            let activeEmployee = this.getActiveEmployee();
+            if (activeEmployee !== '') {   // this is set if the user selected from the popup and hit return
+                this.refreshSearch(activeEmployee);
             } else {
                 this.refreshSearch(this.aSearchBox);
             }
             this.employees = [];
-            this.aSearchBox = ""
+            this.aSearchBox = '';
             this.activeEmployeeIndex = -1;
             this.setActiveEmployee();
-            event.preventDefault()
-        } else if (event.which == 27 || event.keyCode == 27) {   // esc
+            event.preventDefault();
+        } else if (event.which === 27 || event.keyCode === 27) {   // esc
             // clear box
             this.employees = [];
-            this.aSearchBox = ""
+            this.aSearchBox = '';
             this.activeEmployeeIndex = -1;
             this.setActiveEmployee();
-            event.preventDefault()
+            event.preventDefault();
         }
     }
 
@@ -135,10 +135,10 @@ export class EmployeeSearchComponent implements OnInit {
     }
 
     public getActiveEmployee(): string {
-        if (this.activeEmployeeIndex != -1) {
+        if (this.activeEmployeeIndex !== -1) {
             return this.employees[this.activeEmployeeIndex];
         } else {
-            return ""
+            return '';
         }
     }
 
