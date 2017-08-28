@@ -3,15 +3,15 @@ import { Component, ViewChild } from '@angular/core';
 @Component({
     moduleId: module.id,
     selector: 'my-app',
-    templateUrl: 'app.component.html', 
-    styleUrls: [ 'app.component.css' ]  
+    templateUrl: 'app.component.html',
+    styleUrls: [ 'app.component.css' ]
 })
 export class AppComponent {
 
-    searchTerm : string = "Scott \"Dietz\" Dietzen";
+    searchTerm : string = "Charles Giancarlo";
     //searchTerm : string = "Gilbert Tawil";
     directsOnly: boolean = false;
-    
+
     updateSearchTerm(newTerm: string) {
         this.searchTerm = newTerm;
     }
@@ -21,7 +21,7 @@ export class AppComponent {
     }
 
     doAll() {
-        this.searchTerm = "Scott \"Dietz\" Dietzen"; 
+        this.searchTerm = "Charles Giancarlo"; 
     }
 
     doEng() {
@@ -48,6 +48,6 @@ export class AppComponent {
         this.searchTerm = "Matthew \"Kix\" Kixmoeller";
     }
     doMarketing() {
-        this.searchTerm = "Jonathan Martin";
+        this.searchTerm = "Todd Forsythe";
     }
  }

@@ -10,10 +10,10 @@ import { EmployeeRow } from './employee-row';
 export class EmployeeService {
     // loads employee data from json server and massages it so it can be displayed 
 
-    private employeesUrl = 'http://vm-dan.dev.purestorage.com/org.json'
-    private employeeById: {[key: string] : Employee} = {};        // map employee ID to Employee object
-    private nameToId: {[key: string] : string} = {};              // map employee names to employee ID
-    private nameToIdLower: {[key: string] : string} = {};         // map employee names (lower case) to employee ID
+    private employeesUrl = 'http://vm-dan.dev.purestorage.com/org.json';
+    private employeeById: {[key: string]: Employee} = {};        // map employee ID to Employee object
+    private nameToId: {[key: string]: string} = {};              // map employee names to employee ID
+    private nameToIdLower: {[key: string]: string} = {};         // map employee names (lower case) to employee ID
     private teamToManager: {[key: string]: Employee} = {};        // map team name to employee object (of the manager) 
     private employeeNames: Array<string> = [];                    // array containing all names
     private rootEmployee: string;
@@ -24,8 +24,8 @@ export class EmployeeService {
     constructor(private http: Http) { }
 
     // fetches data from json server
-    public getEmployees(rEmployee : string): Promise<EmployeeRow[]> {
-        this.rootEmployee = rEmployee; 
+    public getEmployees(rEmployee: string): Promise<EmployeeRow[]> {
+        this.rootEmployee = rEmployee;
         return this.http.get(this.employeesUrl)
                     .toPromise()
                     .then(this.extractData)
@@ -60,8 +60,7 @@ export class EmployeeService {
     // build the org chart
     private parseJson(empsData : [[{[key: string] : string}]]): void {
        // map to objects
-        let empls : Employee[] = [];
-        let count : number = 0;
+        let empls: Employee[] = [];
         for (let entry  of empsData) {
             let emp = new Employee(entry);
 
@@ -87,11 +86,11 @@ export class EmployeeService {
             }
             empls.push(emp);
 
-        } 
-
+        }
         // second pass to setup employee list for mgrs and to populate team map
+        // tslint:disable-next-line:forin
         for (let empId in this.employeeById) {
-            let emp : Employee = this.employeeById[empId];
+            let emp: Employee = this.employeeById[empId];
             let mgrId : string = emp.getMgrId();
 
             if (mgrId in this.employeeById) {
@@ -114,7 +113,7 @@ export class EmployeeService {
         // get manager chain
         this.lastManagerChain = [];
         let mgrObj = empId;
-        while (mgrObj && !(mgrObj.isScott())) {
+        while (mgrObj && !(mgrObj.isCEO())) {
             mgrObj = this.employeeById[mgrObj.getMgrId()];
             this.lastManagerChain.push(mgrObj);
         } 
@@ -123,14 +122,14 @@ export class EmployeeService {
     }
 
     private teamsAsString(teams: Array<string>): string {
-        let teamNames = "";
+        let teamNames = '';
         for (let aTeam of teams) {
-            teamNames += (aTeam + ", ")
+            teamNames += (aTeam + ', ');
         }
         teamNames = teamNames.slice(0, -2);  // remove last ","
         return teamNames;
     }
-    
+
     // creates the org chart
     public createEmployeeTable(rootManager : string, directsOnly: boolean): EmployeeRow[] {
         // create an array of EmployeeRow where each row looks as follows:
@@ -140,9 +139,8 @@ export class EmployeeService {
         //    person in the org
         let empTable: EmployeeRow[] = [];
         let atLevel = 0;
-        
-        let mgrId = this.nameToIdLower[rootManager.toLowerCase()]
-        let subMgrs: Employee[] = [];
+
+        let mgrId = this.nameToIdLower[rootManager.toLowerCase()];
         let mgrObj: Employee = this.employeeById[mgrId];
         let empObj: Employee; 
 
@@ -153,8 +151,8 @@ export class EmployeeService {
             return [];
         }
         // update manager chain
-        this.updateManagerChain(mgrObj); 
-   
+        this.updateManagerChain(mgrObj);
+
         let recursive = !directsOnly;
         // if this is not a manager, get their manager
         if (!mgrObj.isManager()) {
@@ -169,22 +167,24 @@ export class EmployeeService {
             teamStack.push({teamname: team, level: atLevel});
         }
 
-        let nextTeam: {teamname : string, level: number};       
+        let nextTeam: {teamname : string, level: number};
         let managersEmitted: Array<string> = [];
 
         this.lastOrgSize = 0;
         this.lastOrgSizeICs = 0;
 
-        while(nextTeam = teamStack.pop() ){
-            
+        while (nextTeam = teamStack.pop() ) {
+
             mgrObj = this.teamToManager[nextTeam.teamname];
             mgrId = mgrObj.getId();
             atLevel = nextTeam.level;
 
             // have we already emitted that manager?
-            if (managersEmitted.indexOf(mgrId) == -1) {      // it's not in there
+            if (managersEmitted.indexOf(mgrId) === -1) {      // it's not in there
                 // get the team(s) and prep that string
-                let nextRow = { level: atLevel, team: this.teamsAsString(mgrObj.getTeamsManaged()), title: mgrObj.getTitle(), name: mgrObj.getFullName() };         
+                let nextRow = { level: atLevel,
+                                team: this.teamsAsString(mgrObj.getTeamsManaged()),
+                                title: mgrObj.getTitle(), name: mgrObj.getFullName() };
                 empTable.push(nextRow);
                 managersEmitted.push(mgrId);
                 this.lastOrgSize++;
@@ -194,7 +194,7 @@ export class EmployeeService {
 
             // emit the team if this manager manages more than one team
             if (mgrObj.getTeamsManagedFullName().length > 1) {
-                let nextRow = { level: atLevel, team: nextTeam.teamname.split("(")[0].trim(), title: "", name: "" };         
+                let nextRow = { level: atLevel, team: nextTeam.teamname.split('(')[0].trim(), title: '', name: '' };
                 empTable.push(nextRow);
                 atLevel++;
             }
@@ -206,21 +206,21 @@ export class EmployeeService {
             let icsTemp = mgrObj.getICs(nextTeam.teamname);
 
             if (recursive) {
-                managersTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? -1 : 
-                        ((b.getFullName() > a.getFullName()) ? 1 : 0);} ); 
+                managersTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? -1 :
+                        ((b.getFullName() > a.getFullName()) ? 1 : 0); } );
             } else {
-                managersTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? 1 : 
-                        ((b.getFullName() > a.getFullName()) ? -1 : 0);} ); 
+                managersTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? 1 :
+                        ((b.getFullName() > a.getFullName()) ? -1 : 0); } );
             }
 
             // sort ascending A-Z 
-            icsTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? 1 : 
-                        ((b.getFullName() > a.getFullName()) ? -1 : 0);} ); 
+            icsTemp.sort(function(a,b) {return (a.getFullName() > b.getFullName()) ? 1 :
+                        ((b.getFullName() > a.getFullName()) ? -1 : 0); } );
 
             // emit all ICs in this team
-            let anotherRow : EmployeeRow;  
-            for (let empObj of icsTemp) {
-                anotherRow = { level: atLevel, team: "", title: empObj.getTitle(), name: empObj.getFullName() };         
+            let anotherRow: EmployeeRow;
+            for (empObj of icsTemp) {
+                anotherRow = { level: atLevel, team: '', title: empObj.getTitle(), name: empObj.getFullName() };
                 empTable.push(anotherRow);
                 this.lastOrgSize++;
                 this.lastOrgSizeICs++;
@@ -228,43 +228,45 @@ export class EmployeeService {
 
             if (recursive) {
                 // add teams to backqueue of teams 
-                for (let empObj of managersTemp) {
-                    let teamNames = empObj.getTeamsManagedFullName(); 
+                for (empObj of managersTemp) {
+                    let teamNames = empObj.getTeamsManagedFullName();
                     for (let teamName of teamNames) {
                         // Dietz reports to himself
-                        if (empObj.getFullName() != "Scott \"Dietz\" Dietzen") {
+                        if (!empObj.isCEO()) {
                             teamStack.push({teamname: teamName, level: atLevel});
                         }
                     }
                 }
             } else {
-                for (let empObj of managersTemp) {
-                    if (empObj.getFullName() != "Scott \"Dietz\" Dietzen") {
+                for (empObj of managersTemp) {
+                    if (!empObj.isCEO()) {
                         let teams = empObj.getTeamsManaged();
-                        anotherRow = { level: atLevel, team: this.teamsAsString(teams), title: empObj.getTitle(), name: empObj.getFullName() };         
+                        anotherRow = { level: atLevel,
+                                       team: this.teamsAsString(teams),
+                                       title: empObj.getTitle(), name: empObj.getFullName() };
                         empTable.push(anotherRow);
                         this.lastOrgSize++;
                     }
                 }
-            } 
+            }
         }
         return empTable;
     }
 
 
     // returns a sorted list of names that match a pattern (case-insensitive)
-    public searchCandidates (pattern : string): Array<string> {
-        if (pattern == null || pattern == undefined) {
+    public searchCandidates (pattern: string): Array<string> {
+        if (pattern == null || pattern === undefined) {
             return [];
         }
-        let candidates : Array<string> = []
+        let candidates: Array<string> = [];
         let candCount = 0;
-        pattern = pattern.toLowerCase()
+        pattern = pattern.toLowerCase();
         for (let cand of this.employeeNames) {
-            if(cand.toLowerCase().indexOf(pattern) != -1) {
+            if(cand.toLowerCase().indexOf(pattern) !== -1) {
                 candidates.push(cand);
                 candCount++;
-                if (candCount == 20) {
+                if (candCount === 20) {
                     break;
                 }
             }
@@ -273,7 +275,7 @@ export class EmployeeService {
         return candidates.sort();
     }
 
-    public getEmployee(empName: string) : Employee {
+    public getEmployee(empName: string): Employee {
         return this.employeeById[this.nameToId[empName]];
     }
 }

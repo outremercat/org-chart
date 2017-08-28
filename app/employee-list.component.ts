@@ -3,27 +3,26 @@ import { OnInit } from '@angular/core';
 
 
 import { Employee } from './employee';
-import { EmployeeRow } from './employee-row'
-import { EmployeeSearchComponent } from './employee-search.component'
-import { EmployeeService } from "./employee.service";
+import { EmployeeRow } from './employee-row';
+import { EmployeeService } from './employee.service';
 
 @Component({
    moduleId: module.id,
    selector: 'employee-list',
    templateUrl: 'employee-list.component.html',
-   styleUrls: [ 'employee-list.component.css' ]   
+   styleUrls: [ 'employee-list.component.css' ]
 })
 
 export class EmployeeListComponent implements OnInit,OnChanges {
     @Input() searchTerm : string;
-    @Input() directsOnly: boolean; 
+    @Input() directsOnly: boolean;
 
     errorMessage: string;
     employees: EmployeeRow[];
     managerChain: Employee[];
     detailsOn: boolean = false;
     employeeSelected: Employee;
-    orgSizeSelected: number; 
+    orgSizeSelected: number;
     orgSizeICsSelected: number;
 
     yPosition: number = 0;
@@ -31,13 +30,13 @@ export class EmployeeListComponent implements OnInit,OnChanges {
     constructor (private employeeService: EmployeeService) {
     }
 
-    ngOnInit(): void { 
-        this.getEmployees(); 
+    ngOnInit(): void {
+        this.getEmployees();
     }
 
     // gets called when Input properties change
     ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
-        //this.employees = this.employeeService.createEmployeeTable(changes['searchTerm'].currentValue,
+        // this.employees = this.employeeService.createEmployeeTable(changes['searchTerm'].currentValue,
         //                                                          changes['directsOnly'].currentValue);
         this.employees = this.employeeService.createEmployeeTable(this.searchTerm, this.directsOnly);
         this.managerChain = this.employeeService.lastManagerChain;
@@ -54,15 +53,15 @@ export class EmployeeListComponent implements OnInit,OnChanges {
     }
 
     getIndent(empObj: Employee): number {
-        return (empObj.level-1)*40;
+        return (empObj.level - 1) * 40;
     }
 
-    managerClicked(managerName: string, yPos: number) : void {
+    managerClicked(managerName: string, yPos: number): void {
         // if the person selected is the manager at the top, then show the detail box, else reload the list
-        if(managerName == this.searchTerm) {
+        if (managerName === this.searchTerm) {
             // show employee detail box
             this.employeeClicked(managerName, yPos);
-        } else { 
+        } else {
             // refresh list
             this.searchTerm = managerName;
             this.employees = this.employeeService.createEmployeeTable(this.searchTerm, this.directsOnly);
@@ -72,11 +71,11 @@ export class EmployeeListComponent implements OnInit,OnChanges {
             this.detailsOn = false;
         }
     }
-    
-    employeeClicked(employeeName: string, yPos: number) : void {
+
+    employeeClicked(employeeName: string, yPos: number): void {
         this.employeeSelected = this.employeeService.getEmployee(employeeName);
         this.detailsOn = true;
-        if (employeeName != this.searchTerm) {
+        if (employeeName !== this.searchTerm) {
             this.orgSizeSelected = 0;
             this.orgSizeICsSelected = 0;
         } else {

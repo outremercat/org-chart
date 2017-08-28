@@ -3,8 +3,7 @@ export class Employee {
     private mydata: [{[key: string] : string}] = [{}];
     private icList: Array<Employee>;
     private managerList: Array<Employee>;
-    level : number;
-    private teamList: Array<String>;                 // list of teams this person is in or manages 
+    level: number;
 
     constructor(mdata: [{[key: string] : string}]) {
         this.mydata = mdata;
@@ -29,7 +28,7 @@ export class Employee {
     }
 
     isManager(): boolean {
-        return (this.mydata['isManager'] == "1");
+        return (this.mydata['isManager'] === '1');
     }
 
     getEmployeeId(): string {
@@ -42,9 +41,9 @@ export class Employee {
 
     getEmailPrefix(): string {
         if ('primaryWorkEmail' in this.mydata) {
-            return this.mydata['primaryWorkEmail'].replace("purestorage.com","");
+            return this.mydata['primaryWorkEmail'].replace('purestorage.com', '');
         } else {
-            return "";
+            return '';
         }
     }
 
@@ -59,14 +58,14 @@ export class Employee {
     getPhoneNumber(): string {
         return this.mydata['primaryWorkPhone'];
     }
-        
+
     getHireDate(): string {
-        let dateSplit = this.mydata['Hire_Date'].split("-"); 
-        return dateSplit[1]+"/"+dateSplit[2]+"/"+dateSplit[0];
+        let dateSplit = this.mydata['Hire_Date'].split('-');
+        return dateSplit[1] + '/' + dateSplit[2] + '/' + dateSplit[0];
     }
 
     getWorkAddress() : Array<string> {
-        let addressSplit = this.mydata['Full_Work_Address'].split("&#xa;");
+        let addressSplit = this.mydata['Full_Work_Address'].split('&#xa;');
         return addressSplit;
 
     }
@@ -76,10 +75,10 @@ export class Employee {
         let teams: Array<string> = [];
 
         if ('supervisoryOrganizationsManaged' in this.mydata) {
-            let tList: Array<string> = this.mydata['supervisoryOrganizationsManaged'].split(";");
+            let tList: Array<string> = this.mydata['supervisoryOrganizationsManaged'].split(';');
             for (let aTeam of tList) {
-                if (!aTeam.includes("(inactive)")) {
-                    teams.push(aTeam.split("(")[0].trim());
+                if (!aTeam.includes('(inactive)')) {
+                    teams.push(aTeam.split('(')[0].trim());
                 }
             }
             return teams;
@@ -94,18 +93,18 @@ export class Employee {
         let teams: Array<string> = [];
 
         if ('supervisoryOrganizationsManaged' in this.mydata) {
-            let tList: Array<string> = this.mydata['supervisoryOrganizationsManaged'].split(";");
+            let tList: Array<string> = this.mydata['supervisoryOrganizationsManaged'].split(';');
             for (let aTeam of tList) {
-                if (!aTeam.includes("(inactive)")) {
+                if (!aTeam.includes('(inactive)')) {
                     if(teams.indexOf(aTeam.trim()) == -1) {
                         teams.unshift(aTeam.trim());
-                    }      
+                    }
                 }
             }
             // sometimes managers inherit a team - those need to be added as well - check the IC list
             for (let aIC of this.icList) {
-                if (teams.indexOf(aIC.getTeam()) == -1)  {
-                    teams.unshift(aIC.getTeam()); 
+                if (teams.indexOf(aIC.getTeam()) === -1)  {
+                    teams.unshift(aIC.getTeam());
                 }
             }
             return teams;
@@ -116,13 +115,13 @@ export class Employee {
 
 
     getTeam(): string {
-        return this.mydata['Supervisory_Organization'].replace(" (Inherited)", "").trim();
+        return this.mydata['Supervisory_Organization'].replace(' (Inherited)', '').trim();
     }
 
     private getEmployees(empList: Array<Employee>, teamName: string) {
         let theList: Array<Employee> = [];
         for (let employee of empList) {
-            if (employee.getTeam() == teamName) {
+            if (employee.getTeam() === teamName) {
                 theList.push(employee);
             }
         }
@@ -143,18 +142,18 @@ export class Employee {
     }
 
     isContractor(): boolean {
-        return (this.mydata['Worker_Type'] !== "Employee")
+        return (this.mydata['Worker_Type'] !== 'Employee')
     }
 
-    isScott(): boolean {
-        return (this.getFullName() == "Scott \"Dietz\" Dietzen")
+    isCEO(): boolean {
+        return (this.getFullName() === 'Charles Giancarlo')
     }
 
-    addIC(employee : Employee) : void {
-        this.icList.push(employee)
+    addIC(employee: Employee): void {
+        this.icList.push(employee);
     }
 
-    addManager(employee : Employee) : void {
-        this.managerList.push(employee)
+    addManager(employee: Employee): void {
+        this.managerList.push(employee);
     }
 }

@@ -1,8 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Observable }        from 'rxjs/Observable';
-import { Subject }           from 'rxjs/Subject';
 
-import { EmployeeService } from "./employee.service";
+import { EmployeeService } from './employee.service';
 
 @Component({
     moduleId: module.id,
@@ -34,7 +32,7 @@ export class EmployeeSearchComponent implements OnInit {
 
     // called on every key
     search(term: string): void {
-        if (term == "") {
+        if (term === '') {
             this.employees =  [];
             return;
         }
@@ -90,7 +88,7 @@ export class EmployeeSearchComponent implements OnInit {
             event.preventDefault()
         } else if (event.which === 38 || event.keyCode === 38) { // UP 
             if (this.activeEmployeeIndex === -1) {
-                this.activeEmployeeIndex = this.employees.length - 1; 
+                this.activeEmployeeIndex = this.employees.length - 1;
                 this.setActiveEmployee();
                 return;
             }
