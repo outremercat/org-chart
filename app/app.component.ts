@@ -8,9 +8,9 @@ import { Component, ViewChild } from '@angular/core';
 })
 export class AppComponent {
 
-    searchTerm : string = "Charles Giancarlo";
-    //searchTerm : string = "Gilbert Tawil";
+    searchTerm: string = 'Charles Giancarlo';
     directsOnly: boolean = false;
+    includeContractors: boolean = false;
 
     updateSearchTerm(newTerm: string) {
         this.searchTerm = newTerm;
@@ -20,34 +20,38 @@ export class AppComponent {
         this.directsOnly = newDirectsOnly;
     }
 
+    updateIncludeContractors(newIncludeContractors: boolean) {
+        this.includeContractors = newIncludeContractors;
+    }
+
     doAll() {
-        this.searchTerm = "Charles Giancarlo"; 
+        this.searchTerm = 'Charles Giancarlo';
     }
 
     doEng() {
-        this.searchTerm = "Bob Wood";
+        this.searchTerm = 'Bob Wood';
     }
 
     doSupport() {
-        this.searchTerm = "Colin Mead";
+        this.searchTerm = 'Colin Mead';
     }
 
     doFinance() {
-        this.searchTerm = "Timothy Riitters";
+        this.searchTerm = 'Timothy Riitters';
     }
     doGlobalSales() {
-        this.searchTerm = "David \"Hat\" Hatfield";
+        this.searchTerm = 'David \"Hat\" Hatfield';
     }
     doCTO() {
-        this.searchTerm = "John \"Coz\" Colgrove";
+        this.searchTerm = 'John \"Coz\" Colgrove';
     }
     doOps() {
-        this.searchTerm = "Todd Engle";
+        this.searchTerm = 'Todd Engle';
     }
     doProducts() {
-        this.searchTerm = "Matthew \"Kix\" Kixmoeller";
+        this.searchTerm = 'Matthew \"Kix\" Kixmoeller';
     }
     doMarketing() {
-        this.searchTerm = "Todd Forsythe";
+        this.searchTerm = 'Todd Forsythe';
     }
  }

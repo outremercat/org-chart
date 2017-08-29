@@ -15,10 +15,12 @@
     <br><br>
     <employee-search (onNewSearchTerm)="updateSearchTerm($event)"
                      (onNewDirectsOnly)="updateDirectsOnly($event)"
+                     (onNewIncludeContractors)="updateIncludeContractors($event)"
                      [searchTerm]="searchTerm">
     </employee-search>
     <employee-list  [searchTerm]="searchTerm"
                     [directsOnly]="directsOnly"
+                    [includeContractors] = "includeContractors"
                     >
     </employee-list>
 </td></tr></table>

@@ -7,7 +7,12 @@
       <input type="checkbox" name="directsOnly" 
              (click)="refreshSearchFromDirectsOnly()">
       Directs only
-  </label>
+  </label>&nbsp; &nbsp;
+  <label>
+    <input type="checkbox" name="includeContractors" 
+           (click)="refreshSearchFromIncludeContractors()">
+     Include contractors    
+</label> 
 </div>
 <div style="position: absolute;">
   <div  *ngFor="let employee of employees" 

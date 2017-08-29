@@ -13,9 +13,10 @@ import { EmployeeService } from './employee.service';
    styleUrls: [ 'employee-list.component.css' ]
 })
 
-export class EmployeeListComponent implements OnInit,OnChanges {
-    @Input() searchTerm : string;
+export class EmployeeListComponent implements OnInit, OnChanges {
+    @Input() searchTerm: string;
     @Input() directsOnly: boolean;
+    @Input() includeContractors: boolean;
 
     errorMessage: string;
     employees: EmployeeRow[];
@@ -38,7 +39,14 @@ export class EmployeeListComponent implements OnInit,OnChanges {
     ngOnChanges(changes: {[propKey: string]: SimpleChange}): void {
         // this.employees = this.employeeService.createEmployeeTable(changes['searchTerm'].currentValue,
         //                                                          changes['directsOnly'].currentValue);
-        this.employees = this.employeeService.createEmployeeTable(this.searchTerm, this.directsOnly);
+        if (this.directsOnly === undefined) {
+            this.directsOnly = changes['directsOnly'].previousValue;
+        }
+        if (this.includeContractors === undefined) {
+            this.includeContractors = changes['includeContractors'].previousValue;
+        }
+        this.employees = this.employeeService.createEmployeeTable(this.searchTerm, this.directsOnly,
+                                                                  this.includeContractors);
         this.managerChain = this.employeeService.lastManagerChain;
         this.detailsOn = false;
     }
@@ -46,7 +54,7 @@ export class EmployeeListComponent implements OnInit,OnChanges {
     getEmployees(): void {
         this.employeeService.getEmployees(this.searchTerm)
             .then(employees => { this.employees = employees;
-                                 this.managerChain = this.employeeService.lastManagerChain; 
+                                 this.managerChain = this.employeeService.lastManagerChain;
                                  this.orgSizeSelected = this.employeeService.lastOrgSize;
                                  this.orgSizeICsSelected = this.employeeService.lastOrgSizeICs;
                                });
@@ -64,7 +72,8 @@ export class EmployeeListComponent implements OnInit,OnChanges {
         } else {
             // refresh list
             this.searchTerm = managerName;
-            this.employees = this.employeeService.createEmployeeTable(this.searchTerm, this.directsOnly);
+            this.employees = this.employeeService.createEmployeeTable(this.searchTerm, this.directsOnly,
+                                                                      this.includeContractors);
             this.managerChain = this.employeeService.lastManagerChain;
 
             // clear the box

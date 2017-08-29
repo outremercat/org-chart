@@ -38,7 +38,7 @@ export class EmployeeService {
         let body = res.json();
         let empsData = body['Report_Entry'];
         this.parseJson(empsData);
-        let emplRows = this.createEmployeeTable(this.rootEmployee, false);
+        let emplRows = this.createEmployeeTable(this.rootEmployee, false, false);
         return emplRows;
     }
 
@@ -69,10 +69,10 @@ export class EmployeeService {
                 // no valid e-mail - don't include
                 continue;
             }
-            if (emp.isContractor()) {
+            // if (emp.isContractor()) {
                 // contractor - don't include
-                continue;
-            }
+            //    continue;
+            // }
 
             let employeeId = emp.getEmployeeId();
 
@@ -131,7 +131,7 @@ export class EmployeeService {
     }
 
     // creates the org chart
-    public createEmployeeTable(rootManager : string, directsOnly: boolean): EmployeeRow[] {
+    public createEmployeeTable(rootManager: string, directsOnly: boolean, includeContractors: boolean): EmployeeRow[] {
         // create an array of EmployeeRow where each row looks as follows:
         //    name, title, team, level
         // 'team' is set only for the manager of the team
@@ -142,7 +142,7 @@ export class EmployeeService {
 
         let mgrId = this.nameToIdLower[rootManager.toLowerCase()];
         let mgrObj: Employee = this.employeeById[mgrId];
-        let empObj: Employee; 
+        let empObj: Employee;
 
         let teamStack: Array<{ teamname: string, level: number}> = [];   // stack that holds the teams
 
@@ -190,7 +190,7 @@ export class EmployeeService {
                 this.lastOrgSize++;
             }
 
-            atLevel++;   
+            atLevel++;
 
             // emit the team if this manager manages more than one team
             if (mgrObj.getTeamsManagedFullName().length > 1) {
@@ -220,6 +220,9 @@ export class EmployeeService {
             // emit all ICs in this team
             let anotherRow: EmployeeRow;
             for (empObj of icsTemp) {
+                if (!includeContractors && empObj.isContractor()) {
+                    continue;
+                }
                 anotherRow = { level: atLevel, team: '', title: empObj.getTitle(), name: empObj.getFullName() };
                 empTable.push(anotherRow);
                 this.lastOrgSize++;
@@ -239,6 +242,9 @@ export class EmployeeService {
                 }
             } else {
                 for (empObj of managersTemp) {
+                    if (!includeContractors && empObj.isContractor()) {
+                        continue;
+                    }
                     if (!empObj.isCEO()) {
                         let teams = empObj.getTeamsManaged();
                         anotherRow = { level: atLevel,

@@ -13,11 +13,12 @@ export class EmployeeSearchComponent implements OnInit {
     @Input() searchTerm : string;   // this is the root search term
     @Output() onNewSearchTerm = new EventEmitter<string>();     // used by EmployeeList to update based on this search term
     @Output() onNewDirectsOnly = new EventEmitter<boolean>();     // used by EmployeeList to update based on the directs only checkbox
-
+    @Output() onNewIncludeContractors = new EventEmitter<boolean>();
 
     employees: string[];              // array of employees
     aSearchBox: string;               // text in the search box
     directsOnly: boolean;             // checkbox 
+    includeContractors: boolean;      // checkbox
 
     activeEmployee: string;           // active (highlighted) employee 
     private activeEmployeeIndex: number = -1;   // active (highlighted) employee index 
@@ -50,6 +51,7 @@ export class EmployeeSearchComponent implements OnInit {
         // notify the other components
         this.onNewSearchTerm.emit(empl);
         this.onNewDirectsOnly.emit(this.directsOnly);
+        this.onNewIncludeContractors.emit(this.includeContractors);
         this.employees = [];
         this.aSearchBox = '';
     }
@@ -59,8 +61,17 @@ export class EmployeeSearchComponent implements OnInit {
         this.directsOnly = !this.directsOnly;
         this.onNewSearchTerm.emit(this.searchTerm);
         this.onNewDirectsOnly.emit(this.directsOnly);
+        this.onNewIncludeContractors.emit(this.includeContractors);
     }
 
+
+    refreshSearchFromIncludeContractors(): void {
+        // notify the other components
+        this.includeContractors = !this.includeContractors;
+        this.onNewSearchTerm.emit(this.searchTerm);
+        this.onNewDirectsOnly.emit(this.directsOnly);
+        this.onNewIncludeContractors.emit(this.includeContractors);
+    }
 
     // clear the value of the search box
     resetSearchBox(searchBox: any) {
