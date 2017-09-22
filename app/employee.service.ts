@@ -24,7 +24,7 @@ export class EmployeeService {
     constructor(private http: Http) { }
 
     // fetches data from json server
-    public getEmployees(rEmployee: string): Promise<EmployeeRow[]> {
+    public getEmployees(rEmployee: string): any {
         this.rootEmployee = rEmployee;
         return this.http.get(this.employeesUrl)
                     .toPromise()

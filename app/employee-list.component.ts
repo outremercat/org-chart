@@ -53,7 +53,7 @@ export class EmployeeListComponent implements OnInit, OnChanges {
 
     getEmployees(): void {
         this.employeeService.getEmployees(this.searchTerm)
-            .then(employees => { this.employees = employees;
+            .then((employees: any) => { this.employees = employees;
                                  this.managerChain = this.employeeService.lastManagerChain;
                                  this.orgSizeSelected = this.employeeService.lastOrgSize;
                                  this.orgSizeICsSelected = this.employeeService.lastOrgSizeICs;
